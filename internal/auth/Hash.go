@@ -60,7 +60,11 @@ func ValidateJWT(tokenString, tokenSecret string) (uuid.UUID, error) {
 }
 
 func GetBearerToken(headers http.Header) (string, error) {
-	return strings.Split(headers.Get("Authorization"), " ")[1], nil
+	split_string := strings.Split(headers.Get("Authorization"), " ")
+	if len(split_string) < 2 {
+		return "", fmt.Errorf("No token passed as argument")
+	}
+	return split_string[1], nil
 }
 
 func MakeRefreshToken() (string, error) {
