@@ -16,6 +16,7 @@ type apiConfig struct {
 	fileserverHits atomic.Int32
 	db             *database.Queries
 	platform       string
+	secret         string
 }
 
 func (cfg *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {
@@ -35,6 +36,7 @@ func main() {
 	godotenv.Load()
 	dbURL := os.Getenv("DB_URL")
 	platform := os.Getenv("PLATFORM")
+	secret := os.Getenv("SECRET")
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -48,16 +50,19 @@ func main() {
 		fileserverHits: atomic.Int32{},
 		db:             dbQueries,
 		platform:       platform,
+		secret:         secret,
 	}
 	serveMux.Handle("/app/", apiCfg.middlewareMetricsInc(http.StripPrefix("/app", http.FileServer(http.Dir(".")))))
 	serveMux.HandleFunc("GET /api/healthz", handlerReadiness)
 	serveMux.HandleFunc("GET /admin/metrics", apiCfg.handlerMetrics)
 	serveMux.HandleFunc("POST /admin/reset", apiCfg.handlerReset)
 	serveMux.HandleFunc("POST /api/users", apiCfg.handlerCreateUser)
-	serveMux.HandleFunc("POST /api/chirps/{password}", apiCfg.handlerCreateChirps)
+	serveMux.HandleFunc("POST /api/chirps", apiCfg.handlerCreateChirps)
 	serveMux.HandleFunc("GET /api/chirps", apiCfg.handlerGetChirps)
 	serveMux.HandleFunc("GET /api/chirps/{chirpID}", apiCfg.handlerGetChirpByID)
 	serveMux.HandleFunc("POST /api/login", apiCfg.handlerLogin)
+	serveMux.HandleFunc("POST /api/refresh", apiCfg.handlerRefresh)
+	serveMux.HandleFunc("POST /api/revoke", apiCfg.handlerRevoke)
 
 	server.ListenAndServe()
 }

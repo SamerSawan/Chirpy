@@ -8,6 +8,7 @@ func (cfg *apiConfig) handlerGetChirps(w http.ResponseWriter, r *http.Request) {
 	chirps, err := cfg.db.GetAllChirps(r.Context())
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Unable to fetch chirps", err)
+		return
 	}
 	resp := make([]Chirp, 0, len(chirps))
 	for _, v := range chirps {
