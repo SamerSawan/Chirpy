@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
 func (cfg *apiConfig) handlerReset(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Platform is ", cfg.platform)
+
 	if cfg.platform != "dev" {
 		respondWithError(w, http.StatusForbidden, "Unauthorized endpoint", nil)
 		return
