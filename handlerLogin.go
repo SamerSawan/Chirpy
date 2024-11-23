@@ -22,6 +22,7 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		Email        string    `json:"email"`
 		Token        string    `json:"token"`
 		RefreshToken string    `json:"refresh_token"`
+		IsChirpyRed  bool      `json:"is_chirpy_red"`
 	}
 	params := parameters{}
 	decoder := json.NewDecoder(r.Body)
@@ -55,5 +56,5 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create refresh token object", err)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, loginResp{ID: user.ID, CreatedAt: user.CreatedAt, UpdatedAt: user.UpdatedAt, Email: user.Email, Token: token, RefreshToken: refresh_token})
+	respondWithJSON(w, http.StatusOK, loginResp{ID: user.ID, CreatedAt: user.CreatedAt, UpdatedAt: user.UpdatedAt, Email: user.Email, Token: token, RefreshToken: refresh_token, IsChirpyRed: user.IsChirpyRed})
 }

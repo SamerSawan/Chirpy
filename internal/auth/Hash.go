@@ -76,3 +76,11 @@ func MakeRefreshToken() (string, error) {
 	resp := hex.EncodeToString(random)
 	return resp, nil
 }
+
+func GetAPIKey(headers http.Header) (string, error) {
+	split_string := strings.Split(headers.Get("Authorization"), " ")
+	if len(split_string) < 2 {
+		return "", fmt.Errorf("No token passed as argument")
+	}
+	return split_string[1], nil
+}
